@@ -18,9 +18,6 @@ public class MovementController : MonoBehaviour
         Move();
         Jump();
 
-        Debug.Log("IsGrounded: " + isGrounded); // Wyświetlanie statusu zmiennej isGrounded
-        
-
         Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius);
         isGrounded = false; // Sprawdza czy gracz znajduje się na podłou
 
