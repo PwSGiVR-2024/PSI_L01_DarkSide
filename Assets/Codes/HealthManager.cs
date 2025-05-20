@@ -6,7 +6,7 @@ public class HealthManager : MonoBehaviour
     public RawImage[] lifeImages; // Tablica RawImage reprezentujących życie gracza
     private int currentLife; // Aktualna liczba żyć gracza
 
-   void Start()
+    void Start()
     {
         currentLife = lifeImages.Length;
 
@@ -14,7 +14,7 @@ public class HealthManager : MonoBehaviour
         {
             if (lifeImage != null)
             {
-                lifeImage.color = Color.red;
+                lifeImage.enabled = true; // Pokazuje wszystkie życia na start
             }
             else
             {
@@ -22,12 +22,12 @@ public class HealthManager : MonoBehaviour
             }
         }
     }
+
     private void HandleLifeGrow()
     {
-        if (currentLife < 3) {
-            lifeImages[currentLife + 1].color = Color.red;
+        if (currentLife < lifeImages.Length) {
+            lifeImages[currentLife].enabled = true; // Pokazuje kolejne życie
             currentLife++;
-
         }
         else {
             Debug.Log("Masz juz maksymalna ilosc zyc");
@@ -37,7 +37,7 @@ public class HealthManager : MonoBehaviour
     private void HandleLifeLoss()
     {
         if (currentLife > 0) {
-            lifeImages[currentLife - 1].color = Color.white;
+            lifeImages[currentLife - 1].enabled = false; // Ukrywa ostatnie życie
             currentLife--;
 
             if (currentLife == 0)
@@ -61,6 +61,4 @@ public class HealthManager : MonoBehaviour
             Destroy(collision.gameObject);
         }
     }
-
-
 }
