@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c31f3035ef1d29c4c810cab455ddec70
+guid: 80149d19fff150246840165d5acbf1d1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7337800422741307252
-    second: rat attack1_0
+      213: 4037703824137063717
+    second: player run2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: rat attack1_0
+      name: player run2_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 10
-        width: 22
-        height: 12
+        x: 7
+        y: 6
+        width: 16
+        height: 18
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 47fe43e6b9a15d560800000000000000
-      internalID: 7337800422741307252
+      spriteID: 52d0de14c3ec80830800000000000000
+      internalID: 4037703824137063717
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      rat attack1_0: 7337800422741307252
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
