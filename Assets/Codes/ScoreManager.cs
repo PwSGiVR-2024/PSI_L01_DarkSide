@@ -7,6 +7,11 @@ public class ScoreManager : MonoBehaviour
     public Text scoreText;           // UI do aktualizacji punktów
     public static int score = 0;     // static = wspólne dla wszystkich
 
+    private void Start()
+    {
+        score = 0;
+    }
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player")) // Zbiera tylko gracz

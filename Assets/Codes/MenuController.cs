@@ -1,5 +1,5 @@
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
@@ -9,11 +9,25 @@ public class MenuController : MonoBehaviour
     public GameObject quitSettings;
     public GameObject quitGame;
     public GameObject slider;
+    public Slider volumeSlider;
     public AudioSource audio;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        volumeSlider.onValueChanged.AddListener(SetVolume);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public void playClick()
     {
         audio.Play();
+        SceneManager.LoadScene("Karol");
         // tutaj doda sie przejscie do 1 poziomu
     }
     public void settingsClick()
@@ -41,15 +55,11 @@ public class MenuController : MonoBehaviour
         audio.Play();
         Application.Quit();
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    public void SetVolume(float volume)
     {
-        
+        AudioListener.volume = volume;
+        PlayerPrefs.SetFloat("MasterVolume", volume);
+        PlayerPrefs.Save();
     }
 }
