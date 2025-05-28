@@ -3,8 +3,9 @@ using UnityEngine.UI;
 
 public class HealthManager : MonoBehaviour
 {
-    public RawImage[] lifeImages; // Tablica RawImage reprezentujących życie gracza
-    private int currentLife; // Aktualna liczba żyć gracza
+    public RawImage[] lifeImages;
+    public Animator animator;
+    private int currentLife; // Liczba żyć
 
     void Start()
     {
@@ -14,7 +15,7 @@ public class HealthManager : MonoBehaviour
         {
             if (lifeImage != null)
             {
-                lifeImage.enabled = true; // Pokazuje wszystkie życia na start
+                lifeImage.enabled = true;
             }
             else
             {
@@ -25,38 +26,45 @@ public class HealthManager : MonoBehaviour
 
     private void HandleLifeGrow()
     {
-        if (currentLife < lifeImages.Length) {
-            lifeImages[currentLife].enabled = true; // Pokazuje kolejne życie
+        if (currentLife < lifeImages.Length)
+        {
+            lifeImages[currentLife].enabled = true;
             currentLife++;
         }
-        else {
-            Debug.Log("Masz juz maksymalna ilosc zyc");
+        else
+        {
+            Debug.Log("Masz już maksymalną ilość żyć");
         }
     }
 
     private void HandleLifeLoss()
     {
-        if (currentLife > 0) {
-            lifeImages[currentLife - 1].enabled = false; // Ukrywa ostatnie życie
+        if (currentLife > 0)
+        {
+            lifeImages[currentLife - 1].enabled = false;
             currentLife--;
 
             if (currentLife == 0)
             {
                 Debug.Log("Game Over! Player has no lives left.");
+
+                if (animator != null)
+                {
+                    animator.SetBool("IsDead", true); // Uruchamia animację śmierci
+                }
             }
         }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Działa");
-        if (collision.gameObject.CompareTag("Enemy")) {
-            Debug.Log("Wykryto kolizje");
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
             HandleLifeLoss();
         }
 
-        if (collision.gameObject.CompareTag("HP")) {
-            Debug.Log("Zebrano dodatkowe zycie");
+        if (collision.gameObject.CompareTag("HP"))
+        {
             HandleLifeGrow();
             Destroy(collision.gameObject);
         }
