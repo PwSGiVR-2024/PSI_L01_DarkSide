@@ -162,7 +162,7 @@ MonoBehaviour:
   walkSource: {fileID: 3299867450455112359}
   attackSource: {fileID: 3310113259220614}
   walkClip: {fileID: 8300000, guid: d3406440ca649064f9716db84af29438, type: 3}
-  attackClip: {fileID: 8300000, guid: 73cf4ba525f964e4da13f9b612ad296a, type: 3}
+  attackClip: {fileID: 8300000, guid: 57a2729c7a69df54a96094ab33b541d4, type: 3}
 --- !u!50 &5108018332906963525
 Rigidbody2D:
   serializedVersion: 5
@@ -175,7 +175,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 35
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
@@ -271,8 +271,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 73cf4ba525f964e4da13f9b612ad296a, type: 3}
-  m_Resource: {fileID: 8300000, guid: 73cf4ba525f964e4da13f9b612ad296a, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 57a2729c7a69df54a96094ab33b541d4, type: 3}
+  m_Resource: {fileID: 8300000, guid: 57a2729c7a69df54a96094ab33b541d4, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.3
   m_Pitch: 1
