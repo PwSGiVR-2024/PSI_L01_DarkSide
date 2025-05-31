@@ -45,8 +45,9 @@ public class PauseMenu : MonoBehaviour
     public void QuitGame()
     {
         // Powrót do menu g³ównego
+        Time.timeScale = 1f;
         audio.Play();
-        SceneManager.LoadScene("MainMenu");
+        SceneTransitionManager.Instance.FadeToScene("MainMenu");
     }
 
     public void SetVolume(float volume)
