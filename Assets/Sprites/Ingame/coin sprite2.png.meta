@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      coin sprite2_0: -4151472644932335686
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

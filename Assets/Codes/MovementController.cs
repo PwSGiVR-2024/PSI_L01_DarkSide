@@ -21,15 +21,17 @@ public class MovementController : MonoBehaviour
 
     private float moveInput;
 
+    private float attackCooldown = 0.7f; // czas miêdzy atakami
+    private float lastAttackTime = -Mathf.Infinity; // czas ostatniego ataku
+
     void Update()
     {
         moveInput = Input.GetAxis("Horizontal");
 
-        // Ruch i skok
         Move();
         Jump();
 
-        // Sprawdzenie czy gracz na ziemi
+        // Sprawdzenie, czy gracz na ziemi
         Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius);
         isGrounded = false;
 
@@ -57,9 +59,11 @@ public class MovementController : MonoBehaviour
         // DŸwiêk kroków
         HandleFootstepSound();
 
-        // Atak pod klawiszem E
-        if (Input.GetKeyDown(KeyCode.E))
+        // Atak pod klawiszem E z cooldownem
+        if (Input.GetKeyDown(KeyCode.E) && Time.time >= lastAttackTime + attackCooldown)
         {
+            lastAttackTime = Time.time;
+
             animator.ResetTrigger("Attack");
             animator.SetTrigger("Attack");
 
