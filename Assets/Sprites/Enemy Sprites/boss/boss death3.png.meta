@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      boss death3_0: 2840555446565673119
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

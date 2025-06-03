@@ -4,12 +4,12 @@ using System.Collections;
 public class DamageManager : MonoBehaviour
 {
     #region Public Fields
-    
+
     [Header("Attack Settings")]
     public int attackDamage = 1;
     public float attackRange = 2f;
-    public float attackCooldown = 0.5f;
-    public LayerMask enemyLayerMask = -1; // Które warstwy są wrogami
+    public float attackCooldown = 0.7f;
+    public LayerMask enemyLayerMask = -1;
 
     [Header("Knockback Settings")]
     public bool enableKnockback = true;
@@ -18,26 +18,25 @@ public class DamageManager : MonoBehaviour
     public AnimationCurve knockbackCurve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 0));
 
     [Header("Attack Effects")]
-    public GameObject attackEffect; // Efekt wizualny ataku
-    public AudioClip attackSound; // Dźwięk ataku
-    public Transform attackPoint; // Punkt z którego wychodzi atak
+    public GameObject attackEffect;
+    public AudioSource attackSound; // ← AudioSource zamiast AudioClip
+    public Transform attackPoint;
 
     [Header("Animation")]
-    public Animator playerAnimator; // Animator gracza
-    public string attackTriggerName = "Attack"; // Nazwa triggera w animatorze
-    public float animationDelay = 0.1f; // Opóźnienie między animacją a atakiem
-    
+    public Animator playerAnimator;
+    public string attackTriggerName = "Attack";
+    public float animationDelay = 0.05f;
+
     #endregion
 
     #region Private Fields
-    
+
     private float lastAttackTime = -Mathf.Infinity;
-    private AudioSource audioSource;
-    
+
     #endregion
 
     #region Unity Lifecycle
-    
+
     void Start()
     {
         InitializeComponents();
@@ -48,27 +47,18 @@ public class DamageManager : MonoBehaviour
     {
         HandleInput();
     }
-    
+
     #endregion
 
     #region Initialization
-    
+
     private void InitializeComponents()
     {
-        // Pobierz AudioSource lub dodaj jeśli nie ma
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null && attackSound != null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
-        // Jeśli brak attackPoint, użyj pozycji gracza
         if (attackPoint == null)
         {
             attackPoint = transform;
         }
 
-        // Pobierz animator jeśli nie jest przypisany
         if (playerAnimator == null)
         {
             playerAnimator = GetComponent<Animator>();
@@ -95,33 +85,31 @@ public class DamageManager : MonoBehaviour
             attackCooldown = 0f;
         }
     }
-    
+
     #endregion
 
     #region Input Handling
-    
+
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             TryAttack();
         }
     }
-    
+
     #endregion
 
     #region Attack System
-    
+
     private void TryAttack()
     {
-        // Sprawdź cooldown
         if (Time.time < lastAttackTime + attackCooldown)
         {
             Debug.Log("Attack on cooldown!");
             return;
         }
 
-        // Wykonaj atak z animacją
         PerformAttackWithAnimation();
         lastAttackTime = Time.time;
     }
@@ -129,11 +117,8 @@ public class DamageManager : MonoBehaviour
     private void PerformAttackWithAnimation()
     {
         Debug.Log("Player attacks!");
-
-        // Uruchom animację ataku
         TriggerPlayerAttackAnimation();
 
-        // Jeśli jest opóźnienie animacji, poczekaj
         if (animationDelay > 0)
         {
             StartCoroutine(DelayedAttackCoroutine());
@@ -148,8 +133,7 @@ public class DamageManager : MonoBehaviour
     {
         PlayAttackEffects();
         AttackEnemiesInRange();
-        
-        // Zakończ animację ataku (jeśli nie ma opóźnienia)
+
         if (animationDelay <= 0)
         {
             StartCoroutine(EndAttackAnimationCoroutine());
@@ -158,23 +142,20 @@ public class DamageManager : MonoBehaviour
 
     private void PlayAttackEffects()
     {
-        // Dźwięk ataku
-        if (audioSource != null && attackSound != null)
-        {
-            audioSource.PlayOneShot(attackSound);
-        }
-
-        // Efekt wizualny
         if (attackEffect != null)
         {
             GameObject effect = Instantiate(attackEffect, attackPoint.position, attackPoint.rotation);
             Destroy(effect, 2f);
         }
+
+        if (attackSound != null && attackSound.clip != null)
+        {
+            attackSound.PlayOneShot(attackSound.clip);
+        }
     }
 
     private void AttackEnemiesInRange()
     {
-        // Atak okrężny (360°)
         Collider2D[] enemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayerMask);
 
         foreach (Collider2D enemy in enemies)
@@ -184,11 +165,11 @@ public class DamageManager : MonoBehaviour
 
         Debug.Log($"Hit {enemies.Length} enemies");
     }
-    
+
     #endregion
 
     #region Damage System
-    
+
     private void DealDamageToEnemy(Collider2D enemy)
     {
         bool damageDealt = AttemptDamage(enemy);
@@ -196,7 +177,7 @@ public class DamageManager : MonoBehaviour
         if (damageDealt)
         {
             TriggerEnemyHitAnimation(enemy);
-            
+
             if (enableKnockback)
             {
                 ApplyKnockback(enemy);
@@ -206,7 +187,6 @@ public class DamageManager : MonoBehaviour
 
     private bool AttemptDamage(Collider2D enemy)
     {
-        // Sprawdź czy wróg ma EnemyHealth
         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
@@ -215,7 +195,6 @@ public class DamageManager : MonoBehaviour
             return true;
         }
 
-        // Sprawdź czy wróg ma EnemyPatrolAI (dla prostych wrogów)
         EnemyPatrolAI enemyAI = enemy.GetComponent<EnemyPatrolAI>();
         if (enemyAI != null && enemyAI.GetComponent<EnemyHealth>() == null)
         {
@@ -224,7 +203,6 @@ public class DamageManager : MonoBehaviour
             return true;
         }
 
-        // Fallback dla wrogów z tagiem Enemy
         if (enemy.CompareTag("Enemy"))
         {
             Destroy(enemy.gameObject);
@@ -234,11 +212,11 @@ public class DamageManager : MonoBehaviour
 
         return false;
     }
-    
+
     #endregion
 
     #region Animation System
-    
+
     private void TriggerPlayerAttackAnimation()
     {
         if (playerAnimator != null)
@@ -255,19 +233,19 @@ public class DamageManager : MonoBehaviour
         {
             enemyAnimator.SetTrigger("Hit");
             enemyAnimator.SetBool("IsHurt", true);
-            
+
             StartCoroutine(EndEnemyHurtAnimationCoroutine(enemyAnimator));
         }
     }
-    
+
     #endregion
 
     #region Knockback System
-    
+
     private void ApplyKnockback(Collider2D enemy)
     {
         Vector2 knockbackDirection = CalculateKnockbackDirection(enemy);
-        
+
         Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
         if (enemyRb != null)
         {
@@ -295,31 +273,28 @@ public class DamageManager : MonoBehaviour
 
     private void ApplyKnockbackToAI(Collider2D enemy, Vector2 direction)
     {
-        // EnemyPatrolAI knockback
         EnemyPatrolAI enemyAI = enemy.GetComponent<EnemyPatrolAI>();
         if (enemyAI != null && enemyAI.GetType().GetMethod("ApplyKnockback") != null)
         {
             enemyAI.SendMessage("ApplyKnockback", direction, SendMessageOptions.DontRequireReceiver);
         }
 
-        // EnemyPlayerDetection AI disable
         EnemyPlayerDetection enemyDetection = enemy.GetComponent<EnemyPlayerDetection>();
         if (enemyDetection != null)
         {
             StartCoroutine(TemporarilyDisableAICoroutine(enemyDetection));
         }
     }
-    
+
     #endregion
 
     #region Coroutines
-    
+
     private IEnumerator DelayedAttackCoroutine()
     {
         yield return new WaitForSeconds(animationDelay);
         ExecuteAttack();
-        
-        // Zakończ animację ataku
+
         yield return new WaitForSeconds(0.1f);
         if (playerAnimator != null)
         {
@@ -372,40 +347,27 @@ public class DamageManager : MonoBehaviour
     {
         enemyAI.enabled = false;
         yield return new WaitForSeconds(knockbackDuration);
-        
+
         if (enemyAI != null)
         {
             enemyAI.enabled = true;
         }
     }
-    
+
     #endregion
 
     #region Debug & Visualization
-    
+
     private void OnDrawGizmosSelected()
     {
         if (attackPoint == null) return;
 
-        DrawAttackRange();
-        DrawAttackPoint();
-        DrawKnockbackDirections();
-    }
-
-    private void DrawAttackRange()
-    {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
-    }
 
-    private void DrawAttackPoint()
-    {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(attackPoint.position, 0.1f);
-    }
 
-    private void DrawKnockbackDirections()
-    {
         if (!enableKnockback) return;
 
         Gizmos.color = Color.cyan;
@@ -416,6 +378,6 @@ public class DamageManager : MonoBehaviour
             Gizmos.DrawRay(attackPoint.position, direction * (knockbackForce * 0.2f));
         }
     }
-    
+
     #endregion
 }

@@ -418,7 +418,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8910231033990068175}
   - component: {fileID: 4962001702375882537}
-  - component: {fileID: 7977572468877900588}
   - component: {fileID: 7908239473991241108}
   - component: {fileID: 4300937544206458346}
   - component: {fileID: 3103437518832591840}
@@ -441,7 +440,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.72, y: -1.34, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4553990316639052227}
@@ -504,21 +503,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7977572468877900588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5293504513275940558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d168cf241db2d42e7abd6cbd5f7d63d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  detectionRadius: 5
-  moveSpeed: 3
 --- !u!50 &7908239473991241108
 Rigidbody2D:
   serializedVersion: 5
@@ -562,8 +546,16 @@ MonoBehaviour:
   pointB: {fileID: 0}
   player: {fileID: 0}
   detectionRadius: 5
-  moveSpeed: 1
   losePlayerDelay: 1
+  moveSpeed: 1
+  enableFlipping: 1
+  useScaleFlip: 1
+  useAutoPatrol: 1
+  patrolDistance: 3
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  autoFindPlayer: 1
   walkSoundObject: {fileID: 4365581479605560353}
   attackSoundObject: {fileID: 146431682442622447}
 --- !u!114 &3103437518832591840
@@ -580,6 +572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 3
   healthBar: {fileID: 4038855261428891007}
+  animator: {fileID: 0}
 --- !u!95 &5239389662547228562
 Animator:
   serializedVersion: 7

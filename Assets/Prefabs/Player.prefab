@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6356066737676260518}
   - component: {fileID: 9222612214494015778}
   - component: {fileID: 4973252763044231751}
+  - component: {fileID: 2395939741006411959}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -32,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 7.57, y: -0.8, z: 0}
-  m_LocalScale: {x: 4, y: 4, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2500831281516251289}
@@ -107,16 +108,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08d3c281f895346a48f52dea5887e6c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 5108018332906963525}
-  groundCheck: {fileID: 2500831281516251289}
-  animator: {fileID: 6356066737676260518}
   moveSpeed: 5
   jumpForce: 5
+  groundCheck: {fileID: 2500831281516251289}
   groundCheckRadius: 0.2
+  coyoteTime: 0.5
+  jumpBufferTime: 0.1
   walkSource: {fileID: 3299867450455112359}
-  attackSource: {fileID: 3310113259220614}
   walkClip: {fileID: 8300000, guid: d3406440ca649064f9716db84af29438, type: 3}
-  attackClip: {fileID: 8300000, guid: 57a2729c7a69df54a96094ab33b541d4, type: 3}
+  rb: {fileID: 5108018332906963525}
+  animator: {fileID: 6356066737676260518}
 --- !u!50 &5108018332906963525
 Rigidbody2D:
   serializedVersion: 5
@@ -183,6 +184,21 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   animator: {fileID: 6356066737676260518}
+  destroyPlayerOnDeath: 0
+  destroyDelay: 2
+  deathEffect: {fileID: 0}
+  OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPlayerDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHealthHealed:
+    m_PersistentCalls:
+      m_Calls: []
+  damageSound: {fileID: 0}
+  healSound: {fileID: 0}
+  deathSound: {fileID: 0}
 --- !u!70 &4973252763044231751
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -193,7 +209,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: c017bcfe7fd23af4295cf997ada3e02d, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -220,6 +236,57 @@ CapsuleCollider2D:
   m_Offset: {x: 0.000077962875, y: -0.06240043}
   m_Size: {x: 0.37392163, y: 0.51376075}
   m_Direction: 0
+--- !u!114 &2395939741006411959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275701813751848561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be4c192330c6438fac5cd7716721136, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 1
+  attackRange: 2
+  attackCooldown: 0.5
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  enableKnockback: 1
+  knockbackForce: 10
+  knockbackDuration: 0.3
+  knockbackCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  attackEffect: {fileID: 0}
+  attackSound: {fileID: 0}
+  attackPoint: {fileID: 0}
+  playerAnimator: {fileID: 0}
+  attackTriggerName: Attack
+  animationDelay: 0.1
 --- !u!1 &469909278081941504
 GameObject:
   m_ObjectHideFlags: 0

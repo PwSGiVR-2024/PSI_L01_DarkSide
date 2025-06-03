@@ -289,7 +289,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7560187734618189673}
   - component: {fileID: 5154173180868332928}
-  - component: {fileID: 7564130299628838012}
   - component: {fileID: 2353952953935359276}
   - component: {fileID: 4942519909115705849}
   - component: {fileID: 4693836593528634246}
@@ -375,21 +374,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7564130299628838012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4297336856457466991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d168cf241db2d42e7abd6cbd5f7d63d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  detectionRadius: 5
-  moveSpeed: 3
 --- !u!50 &2353952953935359276
 Rigidbody2D:
   serializedVersion: 5
@@ -433,8 +417,16 @@ MonoBehaviour:
   pointB: {fileID: 0}
   player: {fileID: 0}
   detectionRadius: 5
-  moveSpeed: 1
   losePlayerDelay: 1
+  moveSpeed: 1
+  enableFlipping: 1
+  useScaleFlip: 1
+  useAutoPatrol: 1
+  patrolDistance: 3
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  autoFindPlayer: 1
   walkSoundObject: {fileID: 5601479876823716954}
   attackSoundObject: {fileID: 1742573798490746026}
 --- !u!114 &4693836593528634246
@@ -451,6 +443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 3
   healthBar: {fileID: 5270180305642354309}
+  animator: {fileID: 0}
 --- !u!95 &4122124955401298144
 Animator:
   serializedVersion: 7

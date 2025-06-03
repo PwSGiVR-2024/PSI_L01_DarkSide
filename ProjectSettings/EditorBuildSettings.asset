@@ -10,7 +10,10 @@ EditorBuildSettings:
     guid: 1fa7c5a21b1b3ba498b030f7f6a2091f
   - enabled: 1
     path: Assets/Scenes/Karol.unity
-    guid: 737e3aa08a98300499b04da812eea48d
+    guid: 90afa4736fb71b648b6462151ef18c81
+  - enabled: 1
+    path: Assets/Scenes/Karol1.unity
+    guid: a1721496e9938d244b211b072db7a935
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
