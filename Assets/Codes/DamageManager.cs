@@ -195,6 +195,14 @@ public class DamageManager : MonoBehaviour
             return true;
         }
 
+        BossHealth bossHealth = enemy.GetComponent<BossHealth>();
+        if (bossHealth != null)
+        {
+            bossHealth.TakeDamage(attackDamage);
+            Debug.Log($"Dealt {attackDamage} damage to BOSS: {enemy.name}");
+            return true;
+        }
+
         EnemyPatrolAI enemyAI = enemy.GetComponent<EnemyPatrolAI>();
         if (enemyAI != null && enemyAI.GetComponent<EnemyHealth>() == null)
         {
