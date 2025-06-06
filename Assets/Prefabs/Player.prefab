@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  jumpForce: 5
+  jumpForce: 15
   groundCheck: {fileID: 2500831281516251289}
   groundCheckRadius: 0.2
   coyoteTime: 0.5
@@ -133,9 +133,9 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 35
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_LinearDamping: 5
+  m_AngularDamping: 7
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -181,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 334eb8f2dc6f143e3a6f38f6f8ba58b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadHealthFromPreviousLevel: 1
   lifeImages:
   - {fileID: 0}
   - {fileID: 0}

@@ -10,6 +10,7 @@ TagManager:
   - Collect
   - PauseMenu
   - Test
+  - Spikes
   layers:
   - Default
   - TransparentFX

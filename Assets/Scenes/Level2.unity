@@ -45813,7 +45813,7 @@ GameObject:
   - component: {fileID: 176530862}
   m_Layer: 0
   m_Name: spikes
-  m_TagString: Untagged
+  m_TagString: Spikes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47232,6 +47232,26 @@ PrefabInstance:
       propertyPath: playerAnimator
       value: 
       objectReference: {fileID: 930354053}
+    - target: {fileID: 4047606210607173363, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: jumpForce
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5108018332906963525, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 801c5f30a58af4ad4af4a903685a11e8, type: 2}
+    - target: {fileID: 5108018332906963525, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5108018332906963525, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: m_LinearDamping
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5108018332906963525, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: m_AngularDamping
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7134580360024371965, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
       propertyPath: m_LocalPosition.x
       value: -18.4

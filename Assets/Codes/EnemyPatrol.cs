@@ -1,303 +1,342 @@
 using UnityEngine;
 
+/// <summary>
+/// Zaawansowany system AI dla przeciwników z funkcjami patrolowania i ścigania gracza.
+/// Obsługuje automatyczne tworzenie punktów patrolowania, wykrywanie gracza oraz audio.
+/// </summary>
 public class EnemyPatrolAI : MonoBehaviour
 {
-    [Header("Patrol Points")]
+    #region Inspector Configuration
+    
+    [Header("Punkty Patrolowania")]
+    [Tooltip("Pierwszy punkt patrolowania (opcjonalny jeśli używasz auto-patrol)")]
     public Transform pointA;
+    
+    [Tooltip("Drugi punkt patrolowania (opcjonalny jeśli używasz auto-patrol)")]
     public Transform pointB;
     
-    [Header("Player Detection")]
+    [Header("Wykrywanie Gracza")]
+    [Tooltip("Transform gracza (zostanie automatycznie znaleziony jeśli pusty)")]
     public Transform player;
+    
+    [Tooltip("Zasięg wykrywania gracza")]
+    [Range(1f, 10f)]
     public float detectionRadius = 5f;
+    
+    [Tooltip("Czas po którym przeciwnik przestaje ścigać gracza poza zasięgiem")]
+    [Range(0.5f, 5f)]
     public float losePlayerDelay = 2f;
     
-    [Header("Movement Settings")]
+    [Header("Ruch i Prędkość")]
+    [Tooltip("Prędkość poruszania się przeciwnika")]
+    [Range(0.5f, 8f)]
     public float moveSpeed = 2f;
     
-    [Header("2D Rotation Settings")]
-    public bool enableFlipping = true;          // Czy włączyć obracanie lewo/prawo
-    public bool useScaleFlip = true;            // Używaj scale.x zamiast rotation
+    [Header("Obracanie 2D")]
+    [Tooltip("Czy przeciwnik ma się obracać w kierunku ruchu")]
+    public bool enableFlipping = true;
     
-    [Header("Auto Patrol Settings")]
+    [Tooltip("Używaj skalowania X zamiast rotacji Y")]
+    public bool useScaleFlip = true;
+    
+    [Header("Automatyczne Patrolowanie")]
+    [Tooltip("Automatycznie twórz punkty patrolowania")]
     public bool useAutoPatrol = true;
+    
+    [Tooltip("Odległość punktów od pozycji startowej")]
+    [Range(1f, 8f)]
     public float patrolDistance = 3f;
+    
+    [Tooltip("Maska warstw dla wykrywania przeszkód")]
     public LayerMask groundLayerMask = 1;
     
-    [Header("Auto Player Detection")]
+    [Header("Automatyczne Wykrywanie")]
+    [Tooltip("Automatycznie znajdź gracza na scenie")]
     public bool autoFindPlayer = true;
     
-    [Header("Audio")]
-    public GameObject walkSoundObject;
-    public GameObject attackSoundObject;
-
-    // Zmienne prywatne - stan AI
-    private Vector3 currentTarget;              // Aktualny cel patrolowania
-    private bool chasingPlayer = false;         // Czy obecnie ściga gracza
-    private float timeSinceLastSeen = 0f;       // Czas od ostatniego widzenia gracza
-    private bool playerDeathHandled = false;    // Flaga - czy śmierć gracza została obsłużona
+    [Header("Dźwięki")]
+    [Tooltip("Dźwięk chodzenia (odtwarzany w pętli)")]
+    public AudioClip walkSound;
+    
+    [Tooltip("Dźwięk ataku (jednokrotny)")]
+    public AudioClip attackSound;
+    
+    [Tooltip("Głośność dźwięku chodzenia")]
+    [Range(0f, 1f)]
+    public float walkVolume = 0.5f;
+    
+    [Tooltip("Głośność dźwięku ataku")]
+    [Range(0f, 1f)]
+    public float attackVolume = 0.8f;
+    
+    #endregion
+    
+    #region Private State Variables
+    
+    // Stan AI
+    private Vector3 currentTarget;           // Aktualny cel patrolowania
+    private bool chasingPlayer = false;      // Czy obecnie ściga gracza
+    private float timeSinceLastSeen = 0f;    // Czas od ostatniego widzenia gracza
+    private bool playerDeathHandled = false; // Czy śmierć gracza została obsłużona
     
     // Komponenty
     private Animator animator;
-    private AudioSource walkAudioSource;
-    private AudioSource attackAudioSource;
+    private AudioSource audioSource;
     
-    // Narzędzia
-    private Vector2 lastPosition;               // Ostatnia pozycja do liczenia prędkości
-    private bool facingRight = true;            // Czy enemy patrzy w prawo
-    private Vector3 originalScale;              // Oryginalna skala obiektu
-
-    // Właściwości publiczne dla innych skryptów
+    // Pomocnicze
+    private Vector2 lastPosition;       // Do obliczania prędkości
+    private bool facingRight = true;    // Kierunek patrzenia
+    private Vector3 originalScale;      // Oryginalna skala sprite'a
+    
+    #endregion
+    
+    #region Public Properties
+    
+    /// <summary>Czy przeciwnik obecnie ściga gracza</summary>
     public bool IsChasingPlayer => chasingPlayer;
+    
+    /// <summary>Aktualny cel patrolowania</summary>
     public Vector3 CurrentTarget => currentTarget;
+    
+    /// <summary>Czy punkty patrolowania są prawidłowo ustawione</summary>
     public bool HasValidPatrolPoints => pointA != null && pointB != null;
+    
+    /// <summary>Czy gracz został znaleziony</summary>
     public bool PlayerFound => player != null;
-    public bool FacingRight => facingRight;    // NOWA WŁAŚCIWOŚĆ - kierunek patrzenia
-
+    
+    /// <summary>Czy przeciwnik patrzy w prawo</summary>
+    public bool FacingRight => facingRight;
+    
+    #endregion
+    
     #region Unity Lifecycle
     
+    /// <summary>Inicjalizacja komponentów i konfiguracji AI</summary>
     void Start()
     {
-        // Inicjalizacja wszystkich komponentów i ustawień
         InitializeComponents();
         InitializePlayer();
         InitializePatrolPoints();
         ValidateSetup();
     }
-
+    
+    /// <summary>Główna pętla AI - wykrywanie, ruch, animacje</summary>
     void Update()
     {
-        // Sprawdź czy punkty patrolowania są prawidłowe
         if (!HasValidPatrolPoints)
         {
-            Debug.LogWarning("[EnemyPatrolAI] Brak prawidłowych punktów patrolowania!");
+            Debug.LogWarning($"[{name}] Brak prawidłowych punktów patrolowania!");
             return;
         }
-
-        // Główna pętla AI - sprawdź gracza, porusz się, obracaj, animuj
+        
         UpdatePlayerStatus();
         UpdateMovement();
-        UpdateFacing();             // NOWA FUNKCJA - proste obroty 2D
+        UpdateFacing();
         UpdateAnimation();
         UpdateAudio();
     }
-
+    
+    /// <summary>Obsługa kolizji z graczem (atak)</summary>
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Obsługa kolizji z graczem (atak)
-        HandleCollision(collision);
+        if (collision.collider.CompareTag("Player"))
+        {
+            HandlePlayerCollision();
+        }
     }
-
+    
+    /// <summary>Rysowanie pomocy wizualnych w edytorze</summary>
     void OnDrawGizmosSelected()
     {
-        // Rysowanie pomocy wizualnych w edytorze
         DrawDebugGizmos();
     }
-
+    
+    /// <summary>Sprzątanie przed usunięciem obiektu</summary>
     void OnDestroy()
     {
-        // Sprzątanie przed usunięciem obiektu
-        CleanupPatrolPoints();
+        CleanupAutoPatrolPoints();
     }
-
+    
     #endregion
-
+    
     #region Initialization
-
+    
+    /// <summary>Inicjalizacja komponentów i podstawowych ustawień</summary>
     private void InitializeComponents()
     {
-        // Pobierz komponenty z tego obiektu
         animator = GetComponent<Animator>();
         lastPosition = transform.position;
-        originalScale = transform.localScale;   // NOWE - zapamiętaj oryginalną skalę
-
-        SetupAudioSources();
+        originalScale = transform.localScale;
+        
+        SetupAudioSource();
     }
-
-    private void SetupAudioSources()
+    
+    /// <summary>Konfiguracja źródła dźwięku</summary>
+    private void SetupAudioSource()
     {
-        // Skonfiguruj źródła dźwięku
-        if (walkSoundObject != null)
-            walkAudioSource = walkSoundObject.GetComponent<AudioSource>();
-        if (attackSoundObject != null)
-            attackAudioSource = attackSoundObject.GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        
+        // Optymalne ustawienia dla 2D audio
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f; 
+        audioSource.volume = walkVolume;
+        Debug.Log($"[{name}] AudioSource skonfigurowany - walkSound: {walkSound != null}, attackSound: {attackSound != null}");
     }
-
+    
+    /// <summary>Inicjalizacja referencji do gracza</summary>
     private void InitializePlayer()
     {
-        // Automatyczne wyszukiwanie gracza jeśli włączone
         if (autoFindPlayer && player == null)
         {
             FindPlayer();
         }
-
-        // Sprawdź czy gracz został znaleziony
+        
         if (player == null)
         {
-            Debug.LogWarning("[EnemyPatrolAI] Gracz nie został znaleziony! Enemy nie będzie nikogo ścigał.");
-        }
-        else
-        {
-            Debug.Log($"[EnemyPatrolAI] Znaleziono gracza: {player.name}");
+            Debug.LogWarning($"[{name}] Gracz nie został znaleziony!");
         }
     }
-
+    
+    /// <summary>Konfiguracja punktów patrolowania</summary>
     private void InitializePatrolPoints()
     {
-        // Automatyczne tworzenie punktów patrolowania jeśli włączone
-        if (useAutoPatrol && (!HasValidPatrolPoints))
+        if (useAutoPatrol && !HasValidPatrolPoints)
         {
             SetupAutoPatrolPoints();
         }
         
-        // Ustaw początkowy cel patrolowania
         SetInitialTarget();
     }
-
+    
+    /// <summary>Ustawienie początkowego celu patrolowania</summary>
     private void SetInitialTarget()
     {
-        // Ustaw punkt A jako pierwszy cel
-        if (pointA != null)
-        {
-            currentTarget = pointA.position;
-            Debug.Log($"[EnemyPatrolAI] Początkowy cel ustawiony na: {currentTarget}");
-        }
-        else
-        {
-            Debug.LogWarning("[EnemyPatrolAI] Punkt A jest pusty! Enemy nie będzie patrolował.");
-            currentTarget = transform.position;
-        }
+        currentTarget = pointA != null ? pointA.position : transform.position;
     }
-
+    
+    /// <summary>Sprawdzenie poprawności konfiguracji</summary>
     private void ValidateSetup()
     {
-        // Sprawdź czy konfiguracja jest prawidłowa
         if (!HasValidPatrolPoints)
         {
-            Debug.LogError("[EnemyPatrolAI] Nieprawidłowa konfiguracja! Wymagane są oba punkty A i B.");
+            Debug.LogError($"[{name}] Nieprawidłowa konfiguracja! Wymagane są punkty A i B.");
         }
     }
-
+    
     #endregion
-
+    
     #region Player Detection & Management
-
+    
+    /// <summary>Automatyczne wyszukiwanie gracza na scenie</summary>
     private void FindPlayer()
     {
-        // Znajdź gracza po tagu "Player"
+        // Próba wyszukania po tagu
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         
         if (playerObject != null)
         {
             player = playerObject.transform;
-            Debug.Log($"[EnemyPatrolAI] Automatycznie znaleziono gracza: {player.name}");
+            Debug.Log($"[{name}] Znaleziono gracza: {player.name}");
             return;
         }
-
-        // Plan B: szukaj po nazwie "Player"
+        
+        // Plan awaryjny - wyszukanie po nazwie
         playerObject = GameObject.Find("Player");
         if (playerObject != null)
         {
             player = playerObject.transform;
-            Debug.Log($"[EnemyPatrolAI] Znaleziono gracza po nazwie: {player.name}");
-        }
-        else
-        {
-            Debug.LogWarning("[EnemyPatrolAI] Nie znaleziono gracza na scenie!");
+            Debug.Log($"[{name}] Znaleziono gracza po nazwie: {player.name}");
         }
     }
-
+    
+    /// <summary>Sprawdzenie czy gracz żyje</summary>
     private bool IsPlayerAlive()
     {
-        // Sprawdź czy gracz istnieje i czy żyje
         if (player == null) return false;
-
+        
         HealthManager playerHealth = player.GetComponent<HealthManager>();
-        // Jeśli nie ma HealthManager, zakładamy że gracz żyje
-        return (playerHealth == null) || (playerHealth.IsAlive && !playerHealth.IsDead);
+        return playerHealth == null || (playerHealth.IsAlive && !playerHealth.IsDead);
     }
-
+    
+    /// <summary>Główna logika wykrywania i reagowania na gracza</summary>
     private void UpdatePlayerStatus()
     {
-        // Główna logika wykrywania i reagowania na gracza
         if (player == null) return;
-
+        
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
         bool playerIsAlive = IsPlayerAlive();
         
-        // Obsłuż żywego gracza
         HandlePlayerAliveStatus(playerIsAlive, distanceToPlayer);
-        // Obsłuż martwego gracza
         HandlePlayerDeathStatus(playerIsAlive);
     }
-
+    
+    /// <summary>Obsługa żywego gracza</summary>
     private void HandlePlayerAliveStatus(bool playerIsAlive, float distanceToPlayer)
     {
-        // Obsługa gdy gracz żyje
         if (!playerIsAlive) return;
-
-        // Resetuj flagę śmierci gdy gracz żyje
+        
         playerDeathHandled = false;
-
-        // Sprawdź czy gracz jest w zasięgu wykrywania
+        
         if (distanceToPlayer < detectionRadius)
         {
             StartChasingPlayer();
         }
         else if (chasingPlayer)
         {
-            // Gracz uciekł - zacznij odliczanie do powrotu na patrol
             HandlePlayerOutOfRange();
         }
     }
-
+    
+    /// <summary>Obsługa śmierci gracza</summary>
     private void HandlePlayerDeathStatus(bool playerIsAlive)
     {
-        // Obsługa śmierci gracza - TYLKO RAZ
         if (playerIsAlive || playerDeathHandled || !chasingPlayer) return;
-
-        // Oznacz że śmierć została obsłużona
+        
         playerDeathHandled = true;
         StopChasingPlayer();
         ReturnToNearestPatrolPoint();
         
-        Debug.Log("[EnemyPatrolAI] Gracz nie żyje, przestaję ścigać i wracam na patrol");
+        Debug.Log($"[{name}] Gracz zmarł, wracam na patrol");
     }
-
+    
+    /// <summary>Rozpoczęcie ścigania gracza</summary>
     private void StartChasingPlayer()
     {
-        // Rozpocznij ściganie gracza
         chasingPlayer = true;
         timeSinceLastSeen = 0f;
     }
-
+    
+    /// <summary>Zatrzymanie ścigania gracza</summary>
     private void StopChasingPlayer()
     {
-        // Zatrzymaj ściganie gracza
         chasingPlayer = false;
         timeSinceLastSeen = losePlayerDelay;
     }
-
+    
+    /// <summary>Obsługa gdy gracz uciekł poza zasięg</summary>
     private void HandlePlayerOutOfRange()
     {
-        // Obsługa gdy gracz jest poza zasięgiem
         timeSinceLastSeen += Time.deltaTime;
         
-        // Po określonym czasie wróć na patrol
         if (timeSinceLastSeen >= losePlayerDelay)
         {
             StopChasingPlayer();
             ReturnToNearestPatrolPoint();
-            Debug.Log("[EnemyPatrolAI] Straciłem gracza, wracam na patrol");
+            Debug.Log($"[{name}] Straciłem gracza, wracam na patrol");
         }
     }
-
+    
     #endregion
-
+    
     #region Movement & Patrol
-
+    
+    /// <summary>Główna logika ruchu - ściganie lub patrolowanie</summary>
     private void UpdateMovement()
     {
-        // Główna logika ruchu - ścigaj gracza lub patroluj
         if (ShouldChasePlayer())
         {
             ChasePlayer();
@@ -307,237 +346,162 @@ public class EnemyPatrolAI : MonoBehaviour
             PatrolBetweenPoints();
         }
     }
-
+    
+    /// <summary>Sprawdzenie czy powinien ścigać gracza</summary>
     private bool ShouldChasePlayer()
     {
-        // Sprawdź czy powinien ścigać gracza
         return chasingPlayer && player != null && IsPlayerAlive();
     }
-
+    
+    /// <summary>Ruch w kierunku gracza</summary>
     private void ChasePlayer()
     {
-        // Porusz się w kierunku gracza
         transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
     }
-
+    
+    /// <summary>Patrolowanie między punktami A i B</summary>
     private void PatrolBetweenPoints()
     {
-        // Patrolowanie między punktami A i B
         transform.position = Vector2.MoveTowards(transform.position, currentTarget, moveSpeed * Time.deltaTime);
         
-        // Sprawdź czy dotarł do celu
-        CheckPatrolTargetReached();
-    }
-
-    private void CheckPatrolTargetReached()
-    {
-        // Sprawdź czy dotarł do punktu patrolowania
-        float distanceToTarget = Vector2.Distance(transform.position, currentTarget);
-        
-        if (distanceToTarget < 0.2f)
+        if (Vector2.Distance(transform.position, currentTarget) < 0.2f)
         {
-            // Przełącz na drugi punkt
             SwitchPatrolTarget();
         }
     }
-
+    
+    /// <summary>Przełączanie między punktami patrolowania</summary>
     private void SwitchPatrolTarget()
     {
-        // Przełączanie między punktami A i B
-        if (Vector3.Distance(currentTarget, pointA.position) < 0.2f)
-        {
-            currentTarget = pointB.position;
-            Debug.Log("[EnemyPatrolAI] Przełączam cel na Punkt B");
-        }
-        else
-        {
-            currentTarget = pointA.position;
-            Debug.Log("[EnemyPatrolAI] Przełączam cel na Punkt A");
-        }
+        bool isAtPointA = Vector3.Distance(currentTarget, pointA.position) < 0.2f;
+        currentTarget = isAtPointA ? pointB.position : pointA.position;
     }
-
+    
+    /// <summary>Powrót do najbliższego punktu patrolowania</summary>
     private void ReturnToNearestPatrolPoint()
     {
-        // Wróć do najbliższego punktu patrolowania
         if (!HasValidPatrolPoints) return;
-
+        
         float distToA = Vector2.Distance(transform.position, pointA.position);
         float distToB = Vector2.Distance(transform.position, pointB.position);
-        currentTarget = (distToA < distToB) ? pointA.position : pointB.position;
+        currentTarget = distToA < distToB ? pointA.position : pointB.position;
     }
-
+    
     #endregion
-
-    #region 2D Rotation & Facing
-
+    
+    #region Facing Direction
+    
+    /// <summary>Aktualizacja kierunku patrzenia</summary>
     private void UpdateFacing()
     {
-        // Aktualizuj kierunek patrzenia enemy (lewo/prawo)
         if (!enableFlipping) return;
-
-        Vector3 targetPosition = GetCurrentTargetPosition();
+        
+        Vector3 targetPosition = ShouldChasePlayer() ? player.position : currentTarget;
         UpdateFacingDirection(targetPosition);
     }
-
-    private Vector3 GetCurrentTargetPosition()
-    {
-        // Pobierz aktualny cel (gracz lub punkt patrolowania)
-        if (ShouldChasePlayer())
-        {
-            return player.position;
-        }
-        else
-        {
-            return currentTarget;
-        }
-    }
-
+    
+    /// <summary>Zmiana kierunku patrzenia w zależności od celu</summary>
     private void UpdateFacingDirection(Vector3 targetPosition)
     {
-        // Sprawdź kierunek do celu
         float horizontalDirection = targetPosition.x - transform.position.x;
         
-        // Jeśli różnica jest znacząca, zaktualizuj kierunek
         if (Mathf.Abs(horizontalDirection) > 0.1f)
         {
             bool shouldFaceRight = horizontalDirection > 0;
             
-            // Zmień kierunek tylko jeśli jest różny od obecnego
             if (shouldFaceRight != facingRight)
             {
                 FlipCharacter();
             }
         }
     }
-
+    
+    /// <summary>Obrócenie sprite'a przeciwnika</summary>
     private void FlipCharacter()
     {
-        // Zmień kierunek patrzenia enemy
         facingRight = !facingRight;
         
         if (useScaleFlip)
         {
-            // Metoda 1: Używaj scale.x (zalecana dla sprite'ów)
             FlipWithScale();
         }
         else
         {
-            // Metoda 2: Używaj rotation Y
             FlipWithRotation();
         }
-        
-        Debug.Log($"[EnemyPatrolAI] Obrócony w kierunku: {(facingRight ? "PRAWO" : "LEWO")}");
     }
-
+    
+    /// <summary>Obrót przez skalowanie X</summary>
     private void FlipWithScale()
     {
-        // Odwróć sprite za pomocą skali X
         Vector3 newScale = originalScale;
         newScale.x = facingRight ? Mathf.Abs(originalScale.x) : -Mathf.Abs(originalScale.x);
         transform.localScale = newScale;
     }
-
+    
+    /// <summary>Obrót przez rotację Y</summary>
     private void FlipWithRotation()
     {
-        // Odwróć sprite za pomocą rotacji Y
         Vector3 rotation = transform.eulerAngles;
         rotation.y = facingRight ? 0 : 180;
         transform.eulerAngles = rotation;
     }
-
-    // Funkcje pomocnicze do ręcznego ustawiania kierunku
-    public void FaceRight()
-    {
-        // Ustaw kierunek na prawo
-        if (!facingRight)
-        {
-            FlipCharacter();
-        }
-    }
-
-    public void FaceLeft()
-    {
-        // Ustaw kierunek na lewo
-        if (facingRight)
-        {
-            FlipCharacter();
-        }
-    }
-
-    public void FaceTowards(Vector3 targetPosition)
-    {
-        // Obróć się w kierunku określonej pozycji
-        float direction = targetPosition.x - transform.position.x;
-        if (direction > 0.1f && !facingRight)
-        {
-            FlipCharacter();
-        }
-        else if (direction < -0.1f && facingRight)
-        {
-            FlipCharacter();
-        }
-    }
-
+    
     #endregion
-
+    
     #region Auto Patrol Setup
-
+    
+    /// <summary>Automatyczne tworzenie punktów patrolowania</summary>
     private void SetupAutoPatrolPoints()
     {
-        // Automatyczne tworzenie punktów patrolowania
         Vector2 currentPos = transform.position;
         Vector2 leftPoint = currentPos + Vector2.left * patrolDistance;
         Vector2 rightPoint = currentPos + Vector2.right * patrolDistance;
         
-        // Sprawdź które pozycje są dostępne
         bool leftValid = IsPositionValid(leftPoint);
         bool rightValid = IsPositionValid(rightPoint);
         
-        // Stwórz punkty w zależności od dostępnych pozycji
-        CreatePatrolPointsBasedOnValidPositions(currentPos, leftPoint, rightPoint, leftValid, rightValid);
+        CreateOptimalPatrolPoints(currentPos, leftPoint, rightPoint, leftValid, rightValid);
         
-        Debug.Log($"[EnemyPatrolAI] Automatyczne punkty patrolowania utworzone - A: {pointA?.position}, B: {pointB?.position}");
+        Debug.Log($"[{name}] Auto-patrol punkty utworzone - A: {pointA?.position}, B: {pointB?.position}");
     }
-
-    private void CreatePatrolPointsBasedOnValidPositions(Vector2 currentPos, Vector2 leftPoint, Vector2 rightPoint, bool leftValid, bool rightValid)
+    
+    /// <summary>Tworzenie optymalnych punktów patrolowania</summary>
+    private void CreateOptimalPatrolPoints(Vector2 currentPos, Vector2 leftPoint, Vector2 rightPoint, bool leftValid, bool rightValid)
     {
-        // Tworzenie punktów w zależności od dostępnych pozycji
         if (leftValid && rightValid)
         {
-            // Oba kierunki dostępne - idealny patrol
-            CreatePatrolPoint(ref pointA, leftPoint, "PatrolPointA");
-            CreatePatrolPoint(ref pointB, rightPoint, "PatrolPointB");
+            CreatePatrolPoint(ref pointA, leftPoint, "AutoPatrolPoint_A");
+            CreatePatrolPoint(ref pointB, rightPoint, "AutoPatrolPoint_B");
         }
         else if (leftValid)
         {
-            // Tylko lewy kierunek dostępny
-            CreatePatrolPoint(ref pointA, leftPoint, "PatrolPointA");
-            CreatePatrolPoint(ref pointB, currentPos + Vector2.right * (patrolDistance * 0.5f), "PatrolPointB");
+            CreatePatrolPoint(ref pointA, leftPoint, "AutoPatrolPoint_A");
+            CreatePatrolPoint(ref pointB, currentPos + Vector2.right * (patrolDistance * 0.5f), "AutoPatrolPoint_B");
         }
         else if (rightValid)
         {
-            // Tylko prawy kierunek dostępny
-            CreatePatrolPoint(ref pointA, currentPos + Vector2.left * (patrolDistance * 0.5f), "PatrolPointA");
-            CreatePatrolPoint(ref pointB, rightPoint, "PatrolPointB");
+            CreatePatrolPoint(ref pointA, currentPos + Vector2.left * (patrolDistance * 0.5f), "AutoPatrolPoint_A");
+            CreatePatrolPoint(ref pointB, rightPoint, "AutoPatrolPoint_B");
         }
         else
         {
-            // Plan awaryjny: mniejsze punkty patrolowania
-            CreatePatrolPoint(ref pointA, currentPos + Vector2.left * (patrolDistance * 0.5f), "PatrolPointA");
-            CreatePatrolPoint(ref pointB, currentPos + Vector2.right * (patrolDistance * 0.5f), "PatrolPointB");
+            // Awaryjne małe punkty
+            float safeDistance = patrolDistance * 0.3f;
+            CreatePatrolPoint(ref pointA, currentPos + Vector2.left * safeDistance, "AutoPatrolPoint_A");
+            CreatePatrolPoint(ref pointB, currentPos + Vector2.right * safeDistance, "AutoPatrolPoint_B");
         }
     }
-
+    
+    /// <summary>Sprawdzenie czy pozycja jest wolna od przeszkód</summary>
     private bool IsPositionValid(Vector2 position)
     {
-        // Sprawdź czy pozycja nie koliduje z przeszkodami
-        Collider2D hit = Physics2D.OverlapCircle(position, 0.2f, groundLayerMask);
-        return hit == null;
+        return Physics2D.OverlapCircle(position, 0.2f, groundLayerMask) == null;
     }
-
+    
+    /// <summary>Utworzenie lub aktualizacja punktu patrolowania</summary>
     private void CreatePatrolPoint(ref Transform point, Vector2 position, string pointName)
     {
-        // Stwórz lub zaktualizuj punkt patrolowania
         if (point == null)
         {
             GameObject newPoint = new GameObject(pointName);
@@ -549,274 +513,204 @@ public class EnemyPatrolAI : MonoBehaviour
             point.position = position;
         }
     }
-
-    private void CleanupPatrolPoints()
+    
+    /// <summary>Usunięcie automatycznie utworzonych punktów</summary>
+    private void CleanupAutoPatrolPoints()
     {
-        // Usuń automatycznie utworzone punkty patrolowania
-        CleanupPatrolPoint(pointA);
-        CleanupPatrolPoint(pointB);
+        CleanupPoint(pointA);
+        CleanupPoint(pointB);
     }
-
-    private void CleanupPatrolPoint(Transform point)
+    
+    /// <summary>Usunięcie pojedynczego auto-punktu</summary>
+    private void CleanupPoint(Transform point)
     {
-        // Usuń punkt jeśli był automatycznie utworzony
-        if (point != null && point.gameObject.name.Contains("PatrolPoint"))
+        if (point != null && point.gameObject.name.Contains("AutoPatrolPoint"))
         {
             DestroyImmediate(point.gameObject);
         }
     }
-
+    
     #endregion
-
+    
     #region Animation & Audio
-
+    
+    /// <summary>Aktualizacja animacji na podstawie ruchu</summary>
     private void UpdateAnimation()
     {
-        // Aktualizuj animacje na podstawie prędkości ruchu
         if (animator == null) return;
-
-        float movementSpeed = GetMovementSpeed();
+        
+        float movementSpeed = CalculateMovementSpeed();
         animator.SetFloat("Speed", movementSpeed);
     }
-
+    
+    /// <summary>Aktualizacja dźwięków na podstawie ruchu</summary>
     private void UpdateAudio()
     {
-        // Aktualizuj dźwięki na podstawie ruchu
-        if (walkAudioSource == null) return;
-
-        float movementSpeed = GetMovementSpeed();
-        HandleWalkingAudio(movementSpeed);
-    }
-
-    private float GetMovementSpeed()
-    {
-        // Oblicz prędkość ruchu na podstawie zmiany pozycji
-        float movementSpeed = ((Vector2)transform.position - lastPosition).magnitude / Time.deltaTime;
-        lastPosition = transform.position;
-        return movementSpeed;
-    }
-
-    private void HandleWalkingAudio(float movementSpeed)
-    {
-        // Obsługa dźwięku chodzenia
-        bool shouldPlayWalkSound = movementSpeed > 0.01f;
+        if (audioSource == null) return;
         
-        if (shouldPlayWalkSound && !walkAudioSource.isPlaying)
-        {
-            walkAudioSource.Play();
-        }
-        else if (!shouldPlayWalkSound && walkAudioSource.isPlaying)
-        {
-            walkAudioSource.Stop();
-        }
+        float movementSpeed = CalculateMovementSpeed();
+        HandleWalkingAudio(movementSpeed > 0.01f);
     }
-
-    #endregion
-
-    #region Collision Handling
-
-    private void HandleCollision(Collision2D collision)
+    
+    /// <summary>Obliczenie aktualnej prędkości ruchu</summary>
+    private float CalculateMovementSpeed()
     {
-        // Obsługa kolizji z graczem (atak)
-        if (collision.collider.CompareTag("Player"))
+        float speed = ((Vector2)transform.position - lastPosition).magnitude / Time.deltaTime;
+        lastPosition = transform.position;
+        return speed;
+    }
+    
+    /// <summary>Zarządzanie dźwiękiem chodzenia</summary>
+    private void HandleWalkingAudio(bool shouldPlay)
+    {
+        if (shouldPlay && walkSound != null)
         {
-            PlayAttackAnimation();
-            PlayAttackSound();
+            if (!audioSource.isPlaying || audioSource.clip != walkSound)
+            {
+                audioSource.clip = walkSound;
+                audioSource.volume = walkVolume;
+                audioSource.loop = true;
+                audioSource.Play();
+            }
+        }
+        else if (audioSource.isPlaying && audioSource.clip == walkSound)
+        {
+            audioSource.Stop();
         }
     }
-
+    
+    #endregion
+    
+    #region Collision Handling
+    
+    /// <summary>Obsługa kolizji z graczem</summary>
+    private void HandlePlayerCollision()
+    {
+        PlayAttackAnimation();
+        PlayAttackSound();
+    }
+    
+    /// <summary>Odtworzenie animacji ataku</summary>
     private void PlayAttackAnimation()
     {
-        // Odtwórz animację ataku
         if (animator != null)
         {
             animator.SetTrigger("Attack");
         }
     }
-
+    
+    /// <summary>Odtworzenie dźwięku ataku</summary>
     private void PlayAttackSound()
     {
-        // Odtwórz dźwięk ataku
-        if (attackAudioSource != null && !attackAudioSource.isPlaying)
+        if (attackSound != null && audioSource != null)
         {
-            attackAudioSource.Play();
+            audioSource.PlayOneShot(attackSound, attackVolume);
         }
     }
-
+    
     #endregion
-
+    
     #region Debug & Visualization
-
+    
+    /// <summary>Rysowanie wszystkich pomocy wizualnych</summary>
     private void DrawDebugGizmos()
     {
-        // Rysuj wszystkie pomoce wizualne w edytorze
         DrawDetectionRadius();
         DrawPatrolPoints();
-        DrawPatrolArea();
         DrawCurrentTarget();
         DrawPlayerConnection();
-        DrawFacingDirection();      // NOWA FUNKCJA - kierunek patrzenia
+        
+        if (useAutoPatrol)
+        {
+            DrawPatrolRange();
+        }
     }
-
+    
+    /// <summary>Zasięg wykrywania gracza</summary>
     private void DrawDetectionRadius()
     {
-        // Narysuj zasięg wykrywania gracza (czerwony okrąg)
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
-
+    
+    /// <summary>Punkty patrolowania</summary>
     private void DrawPatrolPoints()
     {
-        // Narysuj punkty patrolowania (zielone kółka i linie)
         Gizmos.color = Color.green;
         
         if (pointA != null)
         {
             Gizmos.DrawWireSphere(pointA.position, 0.2f);
-            Gizmos.DrawLine(transform.position, pointA.position);
         }
         
         if (pointB != null)
         {
             Gizmos.DrawWireSphere(pointB.position, 0.2f);
-            Gizmos.DrawLine(transform.position, pointB.position);
         }
     }
-
-    private void DrawPatrolArea()
-    {
-        // Narysuj obszar auto-patrolowania (żółty okrąg)
-        if (useAutoPatrol)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, patrolDistance);
-        }
-    }
-
+    
+    /// <summary>Aktualny cel patrolowania</summary>
     private void DrawCurrentTarget()
     {
-        // Narysuj aktualny cel patrolowania (niebieskie kółko)
         if (!chasingPlayer && Application.isPlaying)
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(currentTarget, 0.15f);
         }
     }
-
+    
+    /// <summary>Połączenie z graczem</summary>
     private void DrawPlayerConnection()
     {
-        // Narysuj połączenie z graczem (czerwone = ściga, szare = nie ściga)
         if (player != null && Application.isPlaying)
         {
             Gizmos.color = chasingPlayer ? Color.red : Color.gray;
             Gizmos.DrawLine(transform.position, player.position);
         }
     }
-
-    private void DrawFacingDirection()
+    
+    /// <summary>Zasięg auto-patrolowania</summary>
+    private void DrawPatrolRange()
     {
-        // Narysuj kierunek patrzenia (magentowa strzałka)
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.magenta;
-            Vector3 direction = facingRight ? Vector3.right : Vector3.left;
-            Vector3 arrowEnd = transform.position + direction * 0.8f;
-            
-            // Główna linia strzałki
-            Gizmos.DrawLine(transform.position, arrowEnd);
-            
-            // Grotka strzałki
-            Vector3 arrowHead1 = arrowEnd - direction * 0.3f + Vector3.up * 0.2f;
-            Vector3 arrowHead2 = arrowEnd - direction * 0.3f + Vector3.down * 0.2f;
-            Gizmos.DrawLine(arrowEnd, arrowHead1);
-            Gizmos.DrawLine(arrowEnd, arrowHead2);
-        }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, patrolDistance);
     }
-
+    
     #endregion
-
+    
     #region Public Methods & Context Menu
-
+    
     [ContextMenu("Znajdź gracza")]
-    public void ForceFindPlayer()
-    {
-        FindPlayer();
-    }
-
+    public void ForceFindPlayer() => FindPlayer();
+    
     [ContextMenu("Ustaw punkty patrolowania")]
-    public void ForceSetupPatrolPoints()
+    public void ForceSetupPatrolPoints() => SetupAutoPatrolPoints();
+    
+    [ContextMenu("Test dźwięków")]
+    public void TestAudio()
     {
-        SetupAutoPatrolPoints();
-    }
-
-    [ContextMenu("Resetuj punkty patrolowania")]
-    public void ResetPatrolPoints()
-    {
-        // Usuń stare punkty i stwórz nowe
-        CleanupPatrolPoints();
-        pointA = null;
-        pointB = null;
-        
-        if (useAutoPatrol)
+        if (audioSource != null)
         {
-            SetupAutoPatrolPoints();
-            SetInitialTarget();
+            if (walkSound != null) audioSource.PlayOneShot(walkSound);
+            if (attackSound != null) audioSource.PlayOneShot(attackSound);
         }
     }
-
-    [ContextMenu("Obróć w prawo")]
-    public void ForceFlipRight()
-    {
-        FaceRight();
-    }
-
-    [ContextMenu("Obróć w lewo")]
-    public void ForceFlipLeft()
-    {
-        FaceLeft();
-    }
-
-    [ContextMenu("Włącz/Wyłącz obracanie")]
-    public void ToggleFlipping()
-    {
-        enableFlipping = !enableFlipping;
-        Debug.Log($"[EnemyPatrolAI] Obracanie: {(enableFlipping ? "WŁĄCZONE" : "WYŁĄCZONE")}");
-    }
-
-    [ContextMenu("Informacje debug")]
-    public void PrintDebugInfo()
-    {
-        // Wyświetl szczegółowe informacje o stanie AI
-        Debug.Log("=== ENEMY PATROL AI DEBUG ===");
-        Debug.Log($"Gracz: {(player != null ? player.name : "BRAK")}");
-        Debug.Log($"Gracz żyje: {IsPlayerAlive()}");
-        Debug.Log($"Punkt A: {(pointA != null ? pointA.position.ToString() : "BRAK")}");
-        Debug.Log($"Punkt B: {(pointB != null ? pointB.position.ToString() : "BRAK")}");
-        Debug.Log($"Aktualny cel: {currentTarget}");
-        Debug.Log($"Ściga gracza: {chasingPlayer}");
-        Debug.Log($"Śmierć gracza obsłużona: {playerDeathHandled}");
-        Debug.Log($"Prędkość ruchu: {moveSpeed}");
-        Debug.Log($"Zasięg wykrywania: {detectionRadius}");
-        Debug.Log($"Patrzy w prawo: {facingRight}");
-        Debug.Log($"Obracanie włączone: {enableFlipping}");
-        Debug.Log($"Użyj scale flip: {useScaleFlip}");
-    }
-
+    
+    /// <summary>Ręczne ustawienie gracza</summary>
     public void SetPlayer(Transform newPlayer)
     {
-        // Ręczne ustawienie gracza
         player = newPlayer;
-        Debug.Log($"[EnemyPatrolAI] Gracz ustawiony ręcznie na: {(player != null ? player.name : "BRAK")}");
+        Debug.Log($"[{name}] Gracz ustawiony: {player?.name ?? "BRAK"}");
     }
-
+    
+    /// <summary>Ręczne ustawienie punktów patrolowania</summary>
     public void SetPatrolPoints(Transform newPointA, Transform newPointB)
     {
-        // Ręczne ustawienie punktów patrolowania
         pointA = newPointA;
         pointB = newPointB;
         SetInitialTarget();
-        Debug.Log($"[EnemyPatrolAI] Punkty patrolowania ustawione ręcznie - A: {pointA?.position}, B: {pointB?.position}");
+        Debug.Log($"[{name}] Punkty patrolowania ustawione - A: {pointA?.position}, B: {pointB?.position}");
     }
-
+    
     #endregion
 }

@@ -263,6 +263,22 @@ public class HealthManager : MonoBehaviour
             StartCoroutine(DestroyPlayerCoroutine());
         }
     }
+    
+    public void InstantDeath()
+    {
+        if (isDead) return; // Zapobiegnij wielokrotnemu wywoływaniu
+        
+        Debug.Log($"[{name}] Instant death triggered!");
+        
+        // Ustaw życie na 0
+        currentLife = 0;
+        UpdateLifeDisplay();
+        
+        // Wywołaj śmierć
+        HandleDeath();
+        
+        OnHealthChanged?.Invoke();
+    }
 
     private void EnablePlayerComponents(bool enable)
     {
@@ -272,21 +288,21 @@ public class HealthManager : MonoBehaviour
         {
             movement.enabled = enable;
         }
-        
+
         // Wyłącz/włącz system ataku
         DamageManager damageManager = GetComponent<DamageManager>();
         if (damageManager != null)
         {
             damageManager.enabled = enable;
         }
-        
+
         // Wyłącz/włącz kolizje (opcjonalnie)
         Collider2D playerCollider = GetComponent<Collider2D>();
         if (playerCollider != null)
         {
             playerCollider.enabled = enable;
         }
-        
+
         // Wyłącz/włącz Rigidbody (zatrzymaj fizyki)
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null && !enable)
@@ -298,7 +314,7 @@ public class HealthManager : MonoBehaviour
         {
             rb.simulated = enable;
         }
-        
+
         Debug.Log($"[{name}] Player components {(enable ? "enabled" : "disabled")}");
     }
 
@@ -370,6 +386,13 @@ public class HealthManager : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (isDead) return; // Nie reaguj na kolizje jeśli martwy
+
+        if (collision.gameObject.CompareTag("Spikes"))
+        {
+            Debug.Log($"[{name}] Player hit spikes - instant death!");
+            InstantDeath();
+            return;
+        }
         
         if (collision.gameObject.CompareTag("Enemy"))
         {
