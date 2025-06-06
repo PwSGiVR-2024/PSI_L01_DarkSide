@@ -1,26 +1,21 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class BossHealth : MonoBehaviour
 {
-
     public int health = 20;
     public bool isInvulnerable = false;
+
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private Boss boss;
     private bool phaseTwoTriggered = false;
-
-
 
     void Start()
     {
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         boss = GetComponent<Boss>();
-
     }
 
     public void TakeDamage(int damage)
@@ -43,34 +38,33 @@ public class BossHealth : MonoBehaviour
     void EnterPhaseTwo()
     {
         spriteRenderer.color = new Color(1f, 0.5f, 0.5f);
-
         boss.speed *= 1.8f;
         animator.speed *= 1.6f;
     }
 
-
     void Die()
     {
         animator.SetTrigger("Death");
-        StartCoroutine(FadeOutAndDestroy());
-
+        StartCoroutine(HandleDeathAndTransition());
     }
 
-    IEnumerator FadeOutAndDestroy()
+    IEnumerator HandleDeathAndTransition()
     {
-        float fadeDuration = 7f;
+        float fadeOutTime = 7f;
         float elapsed = 0f;
         Color originalColor = spriteRenderer.color;
 
-        while (elapsed < fadeDuration)
+        while (elapsed < fadeOutTime)
         {
             elapsed += Time.deltaTime;
-            float alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
+            float alpha = Mathf.Lerp(1f, 0f, elapsed / fadeOutTime);
             spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
             yield return null;
         }
 
-        Destroy(gameObject);
-    }
+        yield return new WaitForSeconds(1f);
+        SceneTransitionManager.Instance.FadeToScene("MainMenu");
+        
 
+    }
 }
