@@ -311,6 +311,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 68570758}
   isFlipped: 0
+  speed: 2.5
+  attackRange: 3
+  maxHealth: 20
 --- !u!114 &55271056
 MonoBehaviour:
   m_ObjectHideFlags: 0
