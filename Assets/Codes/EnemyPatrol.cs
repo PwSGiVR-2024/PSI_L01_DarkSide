@@ -54,16 +54,9 @@ public class EnemyPatrolAI : MonoBehaviour
     [Tooltip("Automatycznie znajdź gracza na scenie")]
     public bool autoFindPlayer = true;
     
-    [Header("Dźwięki")]
-    [Tooltip("Dźwięk chodzenia (odtwarzany w pętli)")]
-    public AudioClip walkSound;
-    
+    [Header("Dźwięki")] 
     [Tooltip("Dźwięk ataku (jednokrotny)")]
     public AudioClip attackSound;
-    
-    [Tooltip("Głośność dźwięku chodzenia")]
-    [Range(0f, 1f)]
-    public float walkVolume = 0.5f;
     
     [Tooltip("Głośność dźwięku ataku")]
     [Range(0f, 1f)]
@@ -133,7 +126,6 @@ public class EnemyPatrolAI : MonoBehaviour
         UpdateMovement();
         UpdateFacing();
         UpdateAnimation();
-        UpdateAudio();
     }
     
     /// <summary>Obsługa kolizji z graczem (atak)</summary>
@@ -179,12 +171,6 @@ public class EnemyPatrolAI : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        
-        // Optymalne ustawienia dla 2D audio
-        audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 0f; 
-        audioSource.volume = walkVolume;
-        Debug.Log($"[{name}] AudioSource skonfigurowany - walkSound: {walkSound != null}, attackSound: {attackSound != null}");
     }
     
     /// <summary>Inicjalizacja referencji do gracza</summary>
@@ -543,15 +529,6 @@ public class EnemyPatrolAI : MonoBehaviour
         animator.SetFloat("Speed", movementSpeed);
     }
     
-    /// <summary>Aktualizacja dźwięków na podstawie ruchu</summary>
-    private void UpdateAudio()
-    {
-        if (audioSource == null) return;
-        
-        float movementSpeed = CalculateMovementSpeed();
-        HandleWalkingAudio(movementSpeed > 0.01f);
-    }
-    
     /// <summary>Obliczenie aktualnej prędkości ruchu</summary>
     private float CalculateMovementSpeed()
     {
@@ -559,26 +536,6 @@ public class EnemyPatrolAI : MonoBehaviour
         lastPosition = transform.position;
         return speed;
     }
-    
-    /// <summary>Zarządzanie dźwiękiem chodzenia</summary>
-    private void HandleWalkingAudio(bool shouldPlay)
-    {
-        if (shouldPlay && walkSound != null)
-        {
-            if (!audioSource.isPlaying || audioSource.clip != walkSound)
-            {
-                audioSource.clip = walkSound;
-                audioSource.volume = walkVolume;
-                audioSource.loop = true;
-                audioSource.Play();
-            }
-        }
-        else if (audioSource.isPlaying && audioSource.clip == walkSound)
-        {
-            audioSource.Stop();
-        }
-    }
-    
     #endregion
     
     #region Collision Handling
@@ -691,7 +648,6 @@ public class EnemyPatrolAI : MonoBehaviour
     {
         if (audioSource != null)
         {
-            if (walkSound != null) audioSource.PlayOneShot(walkSound);
             if (attackSound != null) audioSource.PlayOneShot(attackSound);
         }
     }
