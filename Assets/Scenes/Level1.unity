@@ -32606,6 +32606,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1674824346}
+    - target: {fileID: 3002762829667713093, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: walkSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 079e0be41ee3653429cd21a5c3baa540, type: 3}
+    - target: {fileID: 3002762829667713093, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: walkVolume
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5616550906156651036, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
       propertyPath: m_SortingOrder
       value: 10
@@ -51019,6 +51027,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1674824346}
+    - target: {fileID: 4300937544206458346, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: walkSound
+      value: 
+      objectReference: {fileID: 8300000, guid: e27ec4900c537124686756eac56274ad, type: 3}
+    - target: {fileID: 4300937544206458346, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: walkVolume
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4962001702375882537, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: m_SortingOrder
       value: 10
@@ -51119,6 +51135,18 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1674824346}
+    - target: {fileID: 4942519909115705849, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: walkSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fd3bc9ce06adb0046b3ba364b1c901bf, type: 3}
+    - target: {fileID: 4942519909115705849, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: walkVolume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4942519909115705849, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: attackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 4baf05b85c693cf478a5c7132aa21d92, type: 3}
     - target: {fileID: 5154173180868332928, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
       propertyPath: m_SortingOrder
       value: 10
@@ -53643,6 +53671,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1674824346}
+    - target: {fileID: 3002762829667713093, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: walkSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 079e0be41ee3653429cd21a5c3baa540, type: 3}
+    - target: {fileID: 3002762829667713093, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: walkVolume
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7124010730337182511, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
       propertyPath: canvas
       value: 
@@ -53707,6 +53743,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1674824346}
+    - target: {fileID: 4300937544206458346, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: walkSound
+      value: 
+      objectReference: {fileID: 8300000, guid: e27ec4900c537124686756eac56274ad, type: 3}
+    - target: {fileID: 4300937544206458346, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: walkVolume
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5293504513275940558, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: m_Name
       value: Enemy_slime

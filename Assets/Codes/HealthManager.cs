@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class HealthManager : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class HealthManager : MonoBehaviour
     public bool destroyPlayerOnDeath = false; // Opcja usuwania gracza
     public float destroyDelay = 2f; // Opóźnienie przed usunięciem
     public GameObject deathEffect; // Efekt śmierci
+    public string currentSceneName;
     
     [Header("Health Events")]
     public UnityEvent OnHealthChanged;
@@ -40,6 +43,8 @@ public class HealthManager : MonoBehaviour
 
     void Start()
     {
+        currentSceneName = SceneManager.GetActiveScene().name;
+
         // Sprawdź czy załadować zdrowie z poprzedniego poziomu
         if (loadHealthFromPreviousLevel && TryLoadHealthFromPreviousLevel())
         {
@@ -232,38 +237,43 @@ public class HealthManager : MonoBehaviour
 
     private void HandleDeath()
     {
-        if (isDead) return; // Zapobiegnij wielokrotnemu wywoływaniu
-        
+        if (isDead) return;
+
         isDead = true;
         Debug.Log($"[{name}] Game Over! Player has no lives left.");
-        
+
         PlayDeathEffects();
-        
-        // Animacja śmierci
+
         if (animator != null)
         {
             animator.SetBool("IsDead", true);
         }
-        
-        // Efekt wizualny śmierci
+
         if (deathEffect != null)
         {
             GameObject effect = Instantiate(deathEffect, transform.position, transform.rotation);
             Destroy(effect, 3f);
         }
-        
-        // POPRAWKA: Dodaj wyłączenie komponentów
+
         EnablePlayerComponents(false);
-        
         OnPlayerDeath?.Invoke();
-        
-        // Usuń gracza jeśli opcja jest włączona
+
         if (destroyPlayerOnDeath)
         {
             StartCoroutine(DestroyPlayerCoroutine());
         }
+
+        // Zaczekaj zanim przełączysz scenę
+        StartCoroutine(WaitAndLoadScene(2f)); // 2 sekundy
     }
-    
+
+    private IEnumerator WaitAndLoadScene(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneTransitionManager.Instance.FadeToScene(currentSceneName);
+    }
+
+
     public void InstantDeath()
     {
         if (isDead) return; // Zapobiegnij wielokrotnemu wywoływaniu
