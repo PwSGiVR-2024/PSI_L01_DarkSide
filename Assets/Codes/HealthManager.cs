@@ -4,6 +4,9 @@ using UnityEngine.Events;
 
 public class HealthManager : MonoBehaviour
 {
+    [Header("Level Transition")]
+    public bool loadHealthFromPreviousLevel = true;
+
     [Header("Health Settings")]
     public RawImage[] lifeImages;
     public Animator animator;
@@ -37,10 +40,66 @@ public class HealthManager : MonoBehaviour
 
     void Start()
     {
-        InitializeHealth();
+        // Sprawdź czy załadować zdrowie z poprzedniego poziomu
+        if (loadHealthFromPreviousLevel && TryLoadHealthFromPreviousLevel())
+        {
+            Debug.Log($"[{name}] Health loaded from previous level: {currentLife}/{maxLife}");
+        }
+        else
+        {
+            InitializeHealth();
+        }
         SetupAudio();
         ValidateComponents();
     }
+
+    private bool TryLoadHealthFromPreviousLevel()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning($"[{name}] GameManager not found - using default health");
+            return false;
+        }
+
+        if (GameManager.Instance.GetSavedHealth(out int savedHealth, out int savedMaxHealth))
+        {
+            // Walidacja lifeImages (potrzebne do ustalenia maxLife)
+            if (lifeImages == null || lifeImages.Length == 0)
+            {
+                Debug.LogError($"[{name}] lifeImages array is null or empty!");
+                return false;
+            }
+
+            // Ustaw wartości z poprzedniego poziomu
+            maxLife = lifeImages.Length; // Zachowaj liczbę obrazków z obecnej sceny
+            currentLife = Mathf.Clamp(savedHealth, 0, maxLife); // Ale ogranicz do dostępnych serc
+            isDead = currentLife <= 0;
+
+            UpdateLifeDisplay();
+
+            Debug.Log($"[{name}] Loaded health from previous level: {currentLife}/{maxLife}");
+            return true;
+        }
+
+        Debug.Log($"[{name}] No saved health data found");
+        return false;
+    }
+
+
+    // Zapisz zdrowie przed przejściem do następnego poziomu
+    public void SaveHealthForNextLevel()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SavePlayerHealth(currentLife, maxLife);
+            Debug.Log($"[{name}] Health saved for next level: {currentLife}/{maxLife}");
+        }
+        else
+        {
+            Debug.LogWarning($"[{name}] GameManager not found - cannot save health");
+        }
+    }
+
 
     private void InitializeHealth()
     {
@@ -156,16 +215,6 @@ public class HealthManager : MonoBehaviour
         EnablePlayerComponents(true);
         
         Debug.Log($"[{name}] Health reset to full: {currentLife}/{maxLife}");
-    }
-
-    private void HandleLifeGrow()
-    {
-        Heal(1);
-    }
-
-    private void HandleLifeLoss()
-    {
-        TakeDamage(1);
     }
 
     private void UpdateLifeDisplay()

@@ -166,7 +166,7 @@ public class MovementController : MonoBehaviour
 
     private void CheckGroundStatus()
     {
-        // Sprawdzenie, czy gracz na ziemi (zachowana oryginalna logika z tagami)
+        // Sprawdzenie, czy gracz na znajduje się na ziemi
         Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius);
         isGrounded = false;
 
@@ -246,22 +246,12 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    // Metoda do wymuszenia skoku (np. dla trampolijny)
+    // Metoda do wymuszenia skoku 
     public void ForceJump(float force)
     {
         if (rb != null)
         {
             rb.velocity = new Vector2(rb.velocity.x, force);
-        }
-    }
-
-    // Metoda do wyłączenia/włączenia kontrolera
-    public void SetMovementEnabled(bool enabled)
-    {
-        this.enabled = enabled;
-        if (!enabled && rb != null)
-        {
-            rb.velocity = Vector2.zero;
         }
     }
 
