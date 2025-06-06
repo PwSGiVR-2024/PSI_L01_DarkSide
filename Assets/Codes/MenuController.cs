@@ -28,7 +28,7 @@ public class MenuController : MonoBehaviour
     public void playClick()
     {
         audio.Play();
-        SceneTransitionManager.Instance.FadeToScene("Karol1");
+        SceneTransitionManager.Instance.FadeToScene("Level1");
         // tutaj doda sie przejscie do 1 poziomu
     }
     public void settingsClick()
