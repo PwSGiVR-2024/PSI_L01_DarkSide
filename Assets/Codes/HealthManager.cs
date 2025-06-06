@@ -18,6 +18,7 @@ public class HealthManager : MonoBehaviour
     public float destroyDelay = 2f; // Opóźnienie przed usunięciem
     public GameObject deathEffect; // Efekt śmierci
     public string currentSceneName;
+    public ScoreManager sm;
     
     [Header("Health Events")]
     public UnityEvent OnHealthChanged;
@@ -43,6 +44,7 @@ public class HealthManager : MonoBehaviour
 
     void Start()
     {
+        sm = FindObjectOfType<ScoreManager>();
         currentSceneName = SceneManager.GetActiveScene().name;
 
         // Sprawdź czy załadować zdrowie z poprzedniego poziomu
@@ -261,6 +263,16 @@ public class HealthManager : MonoBehaviour
         if (destroyPlayerOnDeath)
         {
             StartCoroutine(DestroyPlayerCoroutine());
+        }
+
+        if(currentSceneName == "Level1")
+        {
+            ScoreManager.score = 0;
+        }
+        
+        if(currentSceneName == "Level2")
+        {
+            ScoreManager.score = 5;
         }
 
         // Zaczekaj zanim przełączysz scenę
