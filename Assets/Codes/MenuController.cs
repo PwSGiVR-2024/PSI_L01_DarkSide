@@ -9,6 +9,7 @@ public class MenuController : MonoBehaviour
     public GameObject quitSettings;
     public GameObject quitGame;
     public GameObject slider;
+    public GameObject volumeText;
     public Slider volumeSlider;
     public AudioSource audio;
 
@@ -37,6 +38,7 @@ public class MenuController : MonoBehaviour
         settings.SetActive(false);
         quitGame.SetActive(false);
         slider.SetActive(true);
+        volumeText.SetActive(true);
         quitSettings.SetActive(true);
     }
 
@@ -47,6 +49,7 @@ public class MenuController : MonoBehaviour
         settings.SetActive(true);
         quitGame.SetActive(true);
         slider.SetActive(false);
+        volumeText.SetActive(false);
         quitSettings.SetActive(false);
     }
 

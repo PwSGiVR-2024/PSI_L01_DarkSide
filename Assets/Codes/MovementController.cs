@@ -15,6 +15,7 @@ public class MovementController : MonoBehaviour
     [Header("Jump Settings")]
     public float coyoteTime = 0.5f;
     public float jumpBufferTime = 0.1f; // Buffer dla skoku
+    public AudioSource jumpSound;
     
     [Header("Audio")]
     public AudioSource walkSource;
@@ -104,6 +105,7 @@ public class MovementController : MonoBehaviour
         // Jump buffer - pozwala na skok tuż przed lądowaniem
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            jumpSound.Play();
             jumpBufferCounter = jumpBufferTime;
         }
         else
