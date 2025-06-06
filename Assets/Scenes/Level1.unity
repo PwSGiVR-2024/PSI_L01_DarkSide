@@ -32251,6 +32251,7 @@ GameObject:
   - component: {fileID: 658119101}
   - component: {fileID: 658119100}
   - component: {fileID: 658119103}
+  - component: {fileID: 658119104}
   m_Layer: 0
   m_Name: Platform
   m_TagString: Ground
@@ -32396,6 +32397,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &658119104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 658119099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 605a78b76bf8388428fe4b6edd6b300e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &740924728
 GameObject:
   m_ObjectHideFlags: 0
@@ -32580,6 +32593,10 @@ PrefabInstance:
     - target: {fileID: 878006707232617117, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297029926068911492, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1888663564657508384, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
       propertyPath: scoreText
@@ -51010,6 +51027,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_slime (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6171852549792305077, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8910231033990068175, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 126.71
@@ -51099,6 +51120,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1674824346}
     - target: {fileID: 5154173180868332928, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5458141263857532073, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
       propertyPath: m_SortingOrder
       value: 10
       objectReference: {fileID: 0}
@@ -53034,6 +53059,10 @@ PrefabInstance:
       propertyPath: playerAnimator
       value: 
       objectReference: {fileID: 1674824338}
+    - target: {fileID: 5108018332906963525, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7134580360024371965, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.55
@@ -53413,7 +53442,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 7
-  m_Sprite: {fileID: 21300000, guid: 54a906d4754e7894186c3dd6533c1c99, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 42bd9131a6feb8741b43f02b2d85198f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.6039216}
   m_FlipX: 0
   m_FlipY: 0
@@ -53602,6 +53631,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1297029926068911492, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1888663564657508384, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
       propertyPath: scoreText
       value: 
@@ -53677,6 +53710,10 @@ PrefabInstance:
     - target: {fileID: 5293504513275940558, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: m_Name
       value: Enemy_slime
+      objectReference: {fileID: 0}
+    - target: {fileID: 6171852549792305077, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8910231033990068175, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: m_LocalPosition.x
