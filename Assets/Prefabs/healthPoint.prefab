@@ -172,7 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healAmount: 1
   destroyOnPickup: 1
-  pickupSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: ff0f50a6e9f65534ea47bf6e5bf108b5, type: 3}
   pickupEffect: {fileID: 0}
   effectDuration: 2
   updateScoreUI: 0

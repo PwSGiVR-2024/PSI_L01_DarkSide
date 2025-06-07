@@ -76,23 +76,28 @@ public class HealthCollectible : MonoBehaviour
             }
         }
     }
-    
+
     private void PlayPickupEffects()
     {
-        // Odtwórz dźwięk
-        if (audioSource != null && pickupSound != null)
+        // Stwórz tymczasowy obiekt do dźwięku
+        if (pickupSound != null)
         {
-            audioSource.PlayOneShot(pickupSound);
+            GameObject tempAudio = new GameObject("TempPickupAudio");
+            AudioSource tempSource = tempAudio.AddComponent<AudioSource>();
+            tempSource.clip = pickupSound;
+            tempSource.volume = 0.6f;
+            tempSource.Play();
+            Destroy(tempAudio, pickupSound.length);
         }
-        
-        // Stwórz efekt wizualny
+
+        // Efekt wizualny
         if (pickupEffect != null)
         {
             GameObject effect = Instantiate(pickupEffect, transform.position, transform.rotation);
             Destroy(effect, effectDuration);
         }
     }
-    
+
     private void UpdateScoreUI()
     {
         // Znajdź ScoreManager i aktualizuj UI

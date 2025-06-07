@@ -11,6 +11,8 @@ public class BossWeapon : MonoBehaviour
     public float attackRange = 1f;
     public LayerMask attackMask;
 
+    public AudioSource attack;
+
     private Vector3 GetAttackPosition()
     {
         Vector3 pos = transform.position;
@@ -23,6 +25,7 @@ public class BossWeapon : MonoBehaviour
     {
         Vector3 pos = GetAttackPosition();
         Collider2D colInfo = Physics2D.OverlapCircle(pos, attackRange, attackMask);
+        attack.Play();
         if (colInfo != null)
         {
             HealthManager health = colInfo.GetComponent<HealthManager>();
