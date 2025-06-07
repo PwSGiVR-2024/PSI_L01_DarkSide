@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     
     [Header("Debug")]
     public bool resetHealthOnNewGame = true;
+    public bool loadHealthFromPreviousLevel = true; // ✅ Musi być TRUE
     
     private void Awake()
     {

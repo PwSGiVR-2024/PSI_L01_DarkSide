@@ -13,6 +13,14 @@ public class changeLevel : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            // ✅ DODAJ TO: Zapisz życie przed zmianą sceny
+            HealthManager playerHealth = other.GetComponent<HealthManager>();
+            if (playerHealth != null && GameManager.Instance != null)
+            {
+                GameManager.Instance.SavePlayerHealth(playerHealth.CurrentLife, playerHealth.MaxLife);
+                Debug.Log($"Zapisano życie: {playerHealth.CurrentLife}/{playerHealth.MaxLife}");
+            }
+            
             string currentScene = SceneManager.GetActiveScene().name;
 
             if (currentScene == "Level1" && ScoreManager.score == 5)

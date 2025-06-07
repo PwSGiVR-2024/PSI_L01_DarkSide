@@ -429,22 +429,6 @@ public class HealthManager : MonoBehaviour
                 TakeDamage(1); // Domyślne obrażenia
             }
         }
-
-        if (collision.gameObject.CompareTag("HP"))
-        {
-            // Sprawdź ile HP daje pickup
-            HealthPickup pickup = collision.gameObject.GetComponent<HealthPickup>();
-            if (pickup != null)
-            {
-                Heal(pickup.healAmount);
-            }
-            else
-            {
-                Heal(1); // Domyślne leczenie
-            }
-            
-            Destroy(collision.gameObject);
-        }
     }
 
     // Debug w edytorze
