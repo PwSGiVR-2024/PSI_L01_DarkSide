@@ -29,7 +29,12 @@ public class HealthManager : MonoBehaviour
     public AudioClip damageSound;
     public AudioClip healSound;
     public AudioClip deathSound;
-    
+
+
+    public Material flashMaterial; 
+    private Material originalMaterial;
+    private SpriteRenderer spriteRenderer;
+
     private int currentLife; // Liczba żyć
     private int maxLife; // Maksymalna liczba żyć
     private AudioSource audioSource;
@@ -46,6 +51,12 @@ public class HealthManager : MonoBehaviour
     {
         sm = FindObjectOfType<ScoreManager>();
         currentSceneName = SceneManager.GetActiveScene().name;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            originalMaterial = spriteRenderer.material;
+        }
 
         // Sprawdź czy załadować zdrowie z poprzedniego poziomu
         if (loadHealthFromPreviousLevel && TryLoadHealthFromPreviousLevel())
@@ -168,7 +179,8 @@ public class HealthManager : MonoBehaviour
         
         UpdateLifeDisplay();
         PlayDamageEffects();
-        
+        StartCoroutine(DamageFlash());
+
         Debug.Log($"[{name}] Took {damage} damage. Health: {currentLife}/{maxLife}");
         
         OnHealthChanged?.Invoke();
@@ -176,6 +188,16 @@ public class HealthManager : MonoBehaviour
         if (currentLife == 0 && previousLife > 0)
         {
             HandleDeath();
+        }
+    }
+
+    IEnumerator DamageFlash()
+    {
+        if (spriteRenderer != null && flashMaterial != null)
+        {
+            spriteRenderer.material = flashMaterial;
+            yield return new WaitForSeconds(0.12f);
+            spriteRenderer.material = originalMaterial;
         }
     }
 

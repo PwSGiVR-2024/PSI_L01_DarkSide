@@ -48253,6 +48253,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 174124001}
+    - target: {fileID: 4693836593528634246, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     - target: {fileID: 4942519909115705849, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
       propertyPath: player
       value: 
@@ -48997,6 +49001,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 183061115}
+    - target: {fileID: 7124010730337182511, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -49674,6 +49682,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 925202065}
+    - target: {fileID: 3103437518832591840, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     - target: {fileID: 4300937544206458346, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: player
       value: 
@@ -49846,6 +49858,10 @@ PrefabInstance:
       propertyPath: damageSound
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 9222612214494015778, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     - target: {fileID: 9222612214494015778, guid: 45eb811e4378c4c4693625beb2f78d00, type: 3}
       propertyPath: 'lifeImages.Array.data[0]'
       value: 
@@ -50429,6 +50445,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 1315500862}
+    - target: {fileID: 3103437518832591840, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     - target: {fileID: 4300937544206458346, guid: b23c5707aea273644ac02fedbda332f8, type: 3}
       propertyPath: player
       value: 
@@ -50846,6 +50866,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 1354579532}
+    - target: {fileID: 7124010730337182511, guid: 0b8bd39da03e30949a88198faaa4ceec, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -51938,6 +51962,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 1802794531}
+    - target: {fileID: 4693836593528634246, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     - target: {fileID: 4942519909115705849, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
       propertyPath: player
       value: 
@@ -55469,6 +55497,10 @@ PrefabInstance:
       propertyPath: collectible
       value: 
       objectReference: {fileID: 2141367269}
+    - target: {fileID: 4693836593528634246, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
+      propertyPath: flashMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 4afd1fdb310a10d4f9a7635f5b7a4b5e, type: 2}
     - target: {fileID: 4942519909115705849, guid: 0e695341d7b1727438bdf90af33ed654, type: 3}
       propertyPath: player
       value: 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -10,25 +11,34 @@ public class EnemyHealth : MonoBehaviour
     public int currentHealth;
     public Rigidbody2D rb;
     public GameObject collectible;
-
+    private SpriteRenderer spriteRenderer;
     private Image fillImage;
     private Image backgroundImage;
     private bool isDead = false;
     private float launchForce = 3f;
+    public Material flashMaterial;              
+    private Material originalMaterial;
 
     void Start()
     {
         currentHealth = maxHealth;
 
         animator = GetComponent<Animator>(); // Pobierz animatora
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.material = Instantiate(spriteRenderer.material);  
+            originalMaterial = spriteRenderer.material;                     
+        }
 
         if (healthBar != null)
         {
             healthBar.maxValue = maxHealth;
             healthBar.value = currentHealth;
-
             fillImage = healthBar.fillRect.GetComponent<Image>();
             backgroundImage = healthBar.transform.Find("Background")?.GetComponent<Image>();
+
 
             if (fillImage != null)
                 fillImage.color = Color.red;
@@ -36,6 +46,7 @@ public class EnemyHealth : MonoBehaviour
             if (backgroundImage != null)
                 backgroundImage.enabled = false;
         }
+
     }
 
     public void TakeDamage(int amount)
@@ -55,10 +66,20 @@ public class EnemyHealth : MonoBehaviour
             if (backgroundImage != null)
                 backgroundImage.enabled = (currentHealth < maxHealth);
         }
-
+        StartCoroutine(DamageFlash());
         if (currentHealth <= 0)
         {
             Die();
+        }
+    }
+
+    IEnumerator DamageFlash()
+    {
+        if (spriteRenderer != null && flashMaterial != null)
+        {
+            spriteRenderer.material = flashMaterial;    
+            yield return new WaitForSeconds(0.12f);
+            spriteRenderer.material = originalMaterial; 
         }
     }
 
